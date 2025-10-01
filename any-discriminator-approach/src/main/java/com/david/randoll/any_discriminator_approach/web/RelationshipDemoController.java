@@ -1,6 +1,7 @@
 package com.david.randoll.any_discriminator_approach.web;
 
 import com.david.randoll.any_discriminator_approach.db.*;
+import com.david.randoll.any_discriminator_approach.repository.EntityRelationshipRepository;
 import com.david.randoll.any_discriminator_approach.repository.RelationshipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/demo")
 @RequiredArgsConstructor
 public class RelationshipDemoController {
     private final RelationshipRepository relationshipRepository;
+    private final EntityRelationshipRepository entityRelationshipRepository;
 
     @PostMapping
     @Transactional
@@ -43,7 +46,10 @@ public class RelationshipDemoController {
      */
     @GetMapping
     public List<Map<String, Object>> fetchAllRelationships() {
-        List<Relationship> entities = relationshipRepository.findAll();
+        List<Relationship> entities = entityRelationshipRepository.findAll().stream()
+                .flatMap(er -> Stream.of(er.getParent(), er.getChild()))
+                .distinct()
+                .toList();
 
         return entities.stream()
                 .map(this::toGraphMap)
