@@ -17,7 +17,10 @@ import java.util.List;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Relationship extends BaseEntity {
+// Feel free to extends BaseEntity if you want to have createdAt and updatedAt fields
+// intentionally left it out to not get confused with audit fields being stored in base table
+// since this model allow each table to store its own audit fields
+public class Relationship {
     public static final String ENTITY_TYPE = "entity_type";
     public static final String ENTITY_ID = "entity_id";
 
