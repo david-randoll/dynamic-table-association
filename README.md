@@ -4,13 +4,13 @@ This repository demonstrates five approaches for modeling inheritance and polymo
 databases using JPA/Hibernate: **Single Table Inheritance**, **Join Table Inheritance**, **Table Per Class Inheritance
 **, **Any Discriminator Approach**, and **One-to-One with Any Discriminator Approach**.
 
-# Single Table Inheritance Approach
+## Single Table Inheritance Approach
 
 This repository demonstrates the **Single Table Inheritance (STI)** strategy for modeling inheritance in relational
 databases. All entities in an inheritance hierarchy are stored in a single database table, differentiated by a type
 discriminator column.
 
-## Approach
+### Approach
 
 - **Single Table**: All subclasses/entities share the same table.
 - **Discriminator Column**: Identifies the type/subclass of each row.
@@ -19,22 +19,25 @@ discriminator column.
 
 This approach is useful for scenarios with polymorphic relationships and straightforward data requirements.
 
-## Use with EAV Model
+### Use with EAV Model
 
 STI is especially helpful when using the **Entity-Attribute-Value (EAV)** model to support custom fields or dynamic
 attributes. It simplifies storing and querying heterogeneous data types within a single table structure.
 
-## Advantages
+### Advantages
 
 - Simplifies schema management by reducing the number of tables.
 - Easy to query all types at once.
 - Good performance for small to medium-sized hierarchies.
 
-## ERD Diagram
+### ERD Diagram
 
 ![img.png](img.png)
 
-Example of the Single Table Inheritance structure.
+entity_relationship table:
+![img_12.png](img_12.png)
+
+relationship table:
 ![img_1.png](img_1.png)
 
 ---
@@ -64,6 +67,12 @@ It's literally just changing the `@Inheritance(strategy = InheritanceType.SINGLE
 ## ERD Diagram
 
 ![img_2.png](img_2.png)
+
+entity_relationship table:
+![img_10.png](img_10.png)
+
+relationship table:
+![img_11.png](img_11.png)
 
 ---
 
@@ -100,6 +109,11 @@ Change the `@Inheritance` annotation to
 
 ![img_3.png](img_3.png)
 
+entity_relationship table:
+![img_9.png](img_9.png)
+
+There is no relationship table in this approach.
+
 ---
 
 ## Any Discriminator Approach
@@ -127,6 +141,11 @@ audit logs, or activity feeds.
 ## ERD Diagram
 
 ![img_4.png](img_4.png)
+
+entity_relationship table:
+![img_8.png](img_8.png)
+
+There is no relationship table in this approach.
 
 ---
 
