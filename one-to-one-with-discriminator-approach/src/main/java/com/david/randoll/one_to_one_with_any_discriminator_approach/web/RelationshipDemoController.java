@@ -1,9 +1,8 @@
 package com.david.randoll.one_to_one_with_any_discriminator_approach.web;
 
-import com.david.randoll.any_discriminator_approach.db.*;
 import com.david.randoll.one_to_one_with_any_discriminator_approach.db.*;
 import com.david.randoll.one_to_one_with_any_discriminator_approach.repository.EntityRelationshipRepository;
-import com.david.randoll.one_to_one_with_any_discriminator_approach.repository.RelationshipRepository;
+import com.david.randoll.one_to_one_with_any_discriminator_approach.repository.RelatableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +19,7 @@ import java.util.stream.Stream;
 @RequestMapping("/demo")
 @RequiredArgsConstructor
 public class RelationshipDemoController {
-    private final RelationshipRepository relationshipRepository;
+    private final RelatableRepository relatableRepository;
     private final EntityRelationshipRepository entityRelationshipRepository;
 
     @PostMapping
@@ -37,7 +36,7 @@ public class RelationshipDemoController {
         project.addChildRelationship(task);  // Project → Task
 
         // Save all (cascading will persist EntityRelationship)
-        relationshipRepository.saveAll(List.of(task, project, user, org));
+        relatableRepository.saveAll(List.of(task, project, user, org));
 
         return "Demo setup completed";
     }
@@ -47,8 +46,8 @@ public class RelationshipDemoController {
      */
     @GetMapping
     public List<Map<String, Object>> fetchAllRelationships() {
-        List<Relationship> entities = entityRelationshipRepository.findAll().stream()
-                .flatMap(er -> Stream.of(er.getParent(), er.getChild()))
+        List<Relatable> entities = entityRelationshipRepository.findAll().stream()
+                .flatMap(er -> Stream.of(er.getParent().getOwner(), er.getChild().getOwner()))
                 .distinct()
                 .toList();
 
@@ -57,16 +56,18 @@ public class RelationshipDemoController {
                 .toList();
     }
 
-    private Map<String, Object> toGraphMap(Relationship entity) {
+    private Map<String, Object> toGraphMap(Relatable entity) {
         Map<String, Object> map = new HashMap<>();
         map.put("id", entity.getId());
         map.put("type", entity.getClass().getSimpleName());
 
         map.put("parents", entity.getParentRelationships().stream()
+                .map(Relationship::getOwner)
                 .map(r -> Map.of("id", r.getId(), "type", r.getClass().getSimpleName()))
                 .toList());
 
         map.put("children", entity.getChildRelationships().stream()
+                .map(Relationship::getOwner)
                 .map(r -> Map.of("id", r.getId(), "type", r.getClass().getSimpleName()))
                 .toList());
 

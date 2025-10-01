@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class User extends Relationship {
+public class User extends Relatable {
     private String username;
     private String email;
 }

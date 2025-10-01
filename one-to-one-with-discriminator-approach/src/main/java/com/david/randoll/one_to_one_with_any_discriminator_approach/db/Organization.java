@@ -11,6 +11,6 @@ import lombok.experimental.Accessors;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class Organization extends Relationship {
+public class Organization extends Relatable {
     private String name;
 }

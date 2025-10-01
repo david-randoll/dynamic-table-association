@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class Project extends Relationship {
+public class Project extends Relatable {
     private String title;
     private String description;
 }

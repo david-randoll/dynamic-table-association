@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class Task extends Relationship {
+public class Task extends Relatable {
     private String title;
     private boolean completed;
 }
