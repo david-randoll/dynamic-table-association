@@ -96,4 +96,32 @@ Change the `@Inheritance` annotation to
 
 ---
 
+## Any Discriminator Approach
+
+This module demonstrates a highly flexible technique for polymorphic associations using a custom discriminator column.  
+You can associate records with any entity type by storing the target entity’s type and ID as values in a generic table.
+This approach is useful for cases where you need to link entities of arbitrary types, such as in generic relationships,
+audit logs, or activity feeds.
+
+### Key Points
+
+- **Flexible Associations**: Store references to any entity type using a type and ID pair.
+- **Custom Discriminator**: The type discriminator column can be mapped to any entity in the domain.
+- **Supports Many-to-Any Use Cases**: Ideal for generic relationships, comments, or metadata where the target entity
+  varies.
+
+#### Advantages
+
+- Maximum flexibility for dynamic relationships.
+- Reduces the need for multiple foreign keys or join tables.
+- Can model generic links across your domain model.
+
+---
+
+## ERD Diagram
+
+![img_4.png](img_4.png)
+
+---
+
 For more details on implementation, see the code and comments in this repository.
