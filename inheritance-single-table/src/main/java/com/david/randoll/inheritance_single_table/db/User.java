@@ -5,11 +5,13 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@Accessors(chain = true)
 @DiscriminatorValue("USER")
 public class User extends Relationship {
     private String username;
