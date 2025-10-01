@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:9061}
+  port: ${PORT:9060}
 spring:
   jpa:
     hibernate:

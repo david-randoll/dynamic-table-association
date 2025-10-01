@@ -28,6 +28,9 @@ attributes. It simplifies storing and querying heterogeneous data types within a
 
 ![img.png](img.png)
 
+Example of the Single Table Inheritance structure.
+![img_1.png](img_1.png)
+
 ---
 
 For more details on implementation, see the code and comments in this repository.
