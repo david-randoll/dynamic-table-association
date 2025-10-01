@@ -1,34 +1,47 @@
-# Inheritance Strategies in Relational Databases
+# Inheritance & Polymorphic Association Strategies with Hibernate
 
 This repository demonstrates five approaches for modeling inheritance and polymorphic associations in relational
-databases using JPA/Hibernate: **Single Table Inheritance**, **Join Table Inheritance**, **Table Per Class Inheritance
-**, **Any Discriminator Approach**, and **One-to-One with Any Discriminator Approach**.
+databases using JPA/Hibernate:
 
-## Single Table Inheritance Approach
+1. **Single Table Inheritance**
+2. **Join Table (Joined) Inheritance**
+3. **Table Per Class Inheritance**
+4. **Any Discriminator Approach**
+5. **One-to-One with Any Discriminator Approach**
 
-This repository demonstrates the **Single Table Inheritance (STI)** strategy for modeling inheritance in relational
-databases. All entities in an inheritance hierarchy are stored in a single database table, differentiated by a type
-discriminator column.
+## Comparison Table
 
-### Approach
+| Approach                           | Flexibility | Referential Integrity | Query Performance | Schema Simplicity | Best Use Case                                        |
+|------------------------------------|-------------|-----------------------|-------------------|-------------------|------------------------------------------------------|
+| **Single Table Inheritance**       | Low         | Yes                   | Fast (no joins)   | Simple            | Small hierarchies with many shared fields            |
+| **Join Table Inheritance**         | Medium      | Yes                   | Slower (joins)    | Moderate          | Complex hierarchies with distinct fields             |
+| **Table Per Class**                | Low         | No                    | Slower (UNION)    | Fragmented        | Independent subclasses, rarely queried together      |
+| **Any Discriminator**              | High        | No (app-level only)   | Moderate          | Simple generic    | Generic relationships, activity feeds                |
+| **One-to-One + Any Discriminator** | Medium      | Yes                   | Moderate          | Simple            | Polymorphic one-to-one links with enforced integrity |
 
-- **Single Table**: All subclasses/entities share the same table.
-- **Discriminator Column**: Identifies the type/subclass of each row.
-- **Flexible Attributes**: Non-shared attributes are nullable or managed with default values.
-- **Simple Queries**: Fetch records for the entire hierarchy or filter by type.
+---
 
-This approach is useful for scenarios with polymorphic relationships and straightforward data requirements.
+## 1. Single Table Inheritance
 
-### Use with EAV Model
+All entities in a hierarchy are stored in a **single table**, distinguished by a discriminator column.
 
-STI is especially helpful when using the **Entity-Attribute-Value (EAV)** model to support custom fields or dynamic
-attributes. It simplifies storing and querying heterogeneous data types within a single table structure.
+### Key Points
 
-### Advantages
+- **Single Table**: One table holds all subclass data.
+- **Discriminator Column**: Identifies which subclass a row represents.
+- **Nullable Columns**: Non-shared attributes appear as nullable for unrelated types.
 
-- Simplifies schema management by reducing the number of tables.
-- Easy to query all types at once.
-- Good performance for small to medium-sized hierarchies.
+### Pros
+
+- Simplifies schema (one table only).
+- Easy to query across hierarchy.
+- Good performance for small/medium hierarchies.
+
+### Cons
+
+- Lots of null columns if subclasses differ heavily.
+- Schema can become “wide” and messy.
+- Harder to evolve when subclasses diverge a lot.
 
 ### ERD Diagram
 
@@ -42,29 +55,27 @@ relationship table:
 
 ---
 
-## Join Table Inheritance Approach
+## 2. Join Table (Joined) Inheritance
 
-Each subclass/entity gets its own table, and a join is used to reconstruct the full object.
+Each subclass gets its own table. The base class table holds shared attributes, and subclass tables hold specific ones.
 
 ### Key Points
 
-- **Separate Tables**: Each subclass has its own table in addition to the base table.
-- **Joins Required**: Queries joining base and subclass tables reconstruct the entity.
-- **No Nullable Columns**: Each table only contains relevant attributes for the subclass.
+- **Joined Tables**: Queries reconstruct full entities with joins.
+- **No Null Columns**: Each table has only its relevant attributes.
 
-#### How to Use
+### Pros
 
-It's literally just changing the `@Inheritance(strategy = InheritanceType.SINGLE_TABLE)` annotation to  
-`@Inheritance(strategy = InheritanceType.JOINED)` in your entity classes.
+- Clean separation of subclass fields.
+- No wasted space.
+- Referential integrity is preserved between base and subclass.
 
-#### Advantages
+### Cons
 
-- No wasted space for unused fields (no nullable columns for subclass-only attributes).
-- Cleaner data separation for complex hierarchies.
+- Requires joins for polymorphic queries.
+- More complex queries (can impact performance).
 
----
-
-## ERD Diagram
+### ERD Diagram
 
 ![img_2.png](img_2.png)
 
@@ -76,36 +87,27 @@ relationship table:
 
 ---
 
-## Table Per Class Inheritance Approach
+## 3. Table Per Class Inheritance
 
-Each concrete class in the inheritance hierarchy is mapped to its own table. Tables are not related by foreign keys, and
-each contains all fields inherited from the base class.
+Each concrete class has its own full table, including inherited fields. No shared base table.
 
 ### Key Points
 
-- **Separate Tables**: Each concrete subclass has its own table, including inherited fields.
-- **No Referential Integrity**: There is no foreign key relationship between tables. Each table stands alone.
-- **No Shared Primary Key**: Each table manages its own primary keys.
-- **Polymorphic Queries**: Queries across the hierarchy are performed with `UNION` statements.
+- **Independent Tables**: No foreign keys between subclass tables.
+- **Polymorphic Queries**: Hibernate generates `UNION` across tables.
 
-#### Importance of Referential Integrity
+### Pros
 
-With this approach, **referential integrity is not enforced** at the database level, which can lead to data
-inconsistency if not managed carefully. You must ensure integrity through application logic.
+- Each table is self-contained.
+- Good if subclasses are rarely queried together.
 
-#### How to Use
+### Cons
 
-Change the `@Inheritance` annotation to  
-`@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)` in your entity classes.
+- No referential integrity at the DB level for the hierarchy.
+- Polymorphic queries can be slow (use UNION).
+- Duplicate schema between tables.
 
-#### Advantages
-
-- Fully independent tables for each subclass.
-- Useful for hierarchies where subclasses do not share data and are queried independently.
-
----
-
-## ERD Diagram
+### ERD Diagram
 
 ![img_3.png](img_3.png)
 
@@ -116,29 +118,29 @@ There is no relationship table in this approach.
 
 ---
 
-## Any Discriminator Approach
+## 4. Any Discriminator Approach
 
-This module demonstrates a highly flexible technique for polymorphic associations using a custom discriminator column.  
-You can associate records with any entity type by storing the target entity’s type and ID as values in a generic table.
-This approach is useful for cases where you need to link entities of arbitrary types, such as in generic relationships,
-audit logs, or activity feeds.
+A **generic relationship table** stores a `type` and `id` pair to reference arbitrary entities. Uses Hibernate’s
+`@Any` / `@AnyDiscriminator`.
 
 ### Key Points
 
-- **Flexible Associations**: Store references to any entity type using a type and ID pair.
-- **Custom Discriminator**: The type discriminator column can be mapped to any entity in the domain.
-- **Supports Many-to-Any Use Cases**: Ideal for generic relationships, comments, or metadata where the target entity
-  varies.
+- **Flexible**: Can link to any entity type dynamically.
+- **No Foreign Keys**: Database does not enforce integrity. Hibernate resolves references.
 
-#### Advantages
+### Pros
 
-- Maximum flexibility for dynamic relationships.
-- Reduces the need for multiple foreign keys or join tables.
-- Can model generic links across your domain model.
+- Maximum flexibility for polymorphic relationships.
+- Reduces need for multiple relationship tables.
+- Useful for activity feeds, audit logs, metadata, etc.
 
----
+### Cons
 
-## ERD Diagram
+- No DB-level referential integrity (orphaned references possible).
+- Harder to enforce constraints.
+- Queries require extra care (joins by type/id).
+
+### ERD Diagram
 
 ![img_4.png](img_4.png)
 
@@ -149,27 +151,31 @@ There is no relationship table in this approach.
 
 ---
 
-## One-to-One with Any Discriminator Approach
+## 5. One-to-One with Any Discriminator Approach
 
-This module is similar to the Any Discriminator approach, but designed to support **one-to-one polymorphic associations
-with database referential integrity**.
+A refinement of the Any Discriminator pattern, but applied in a **one-to-one** relationship context.
 
 ### Key Points
 
-- **Polymorphic One-to-One**: Each record references exactly one target entity, regardless of its type.
-- **Referential Integrity**: Uses foreign keys where possible to maintain integrity between the source and target
-  tables.
-- **Discriminator Column**: Identifies the type of the referenced entity.
-- **Safer Associations**: Ensures that linked records actually exist, reducing risk of orphaned relationships.
+- **One-to-One Polymorphism**: Each row in an entity (e.g. `User`, `Project`, `Task`, `Organization`) links to exactly
+  one row in the `Relationship` table.
+- **Discriminator Column**: The `Relationship` table holds a discriminator (`entity_type`) and target key (`entity_id`)
+  to resolve back to the owner.
+- **Referential Integrity**: Unlike the pure Any Discriminator approach, this design **does enforce DB-level integrity**
+  via `relationship_id` foreign keys from entity tables into the `Relationship` table.
 
-#### Advantages
+### Pros
 
-- Combines the flexibility of the Any Discriminator approach with the safety of database-enforced referential integrity.
-- Suitable for scenarios requiring strict one-to-one relationships across multiple entity types.
+- Retains flexibility of `@Any` while gaining stronger integrity guarantees.
+- DB-level referential integrity is enforced (`relationship_id` is a proper FK).
+- Clear one-to-one semantics: each entity has exactly one `Relationship`.
 
----
+### Cons
 
-## ERD Diagram
+- More rigid than the pure Any approach (not many-to-any).
+- Slightly more tables and joins involved compared to simpler inheritance.
+
+### ERD Diagram
 
 ![img_5.png](img_5.png)
 
