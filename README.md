@@ -1,3 +1,9 @@
+# Inheritance Strategies in Relational Databases
+
+This repository demonstrates five approaches for modeling inheritance and polymorphic associations in relational
+databases using JPA/Hibernate: **Single Table Inheritance**, **Join Table Inheritance**, **Table Per Class Inheritance
+**, **Any Discriminator Approach**, and **One-to-One with Any Discriminator Approach**.
+
 # Single Table Inheritance Approach
 
 This repository demonstrates the **Single Table Inheritance (STI)** strategy for modeling inheritance in relational
@@ -121,6 +127,37 @@ audit logs, or activity feeds.
 ## ERD Diagram
 
 ![img_4.png](img_4.png)
+
+---
+
+## One-to-One with Any Discriminator Approach
+
+This module is similar to the Any Discriminator approach, but designed to support **one-to-one polymorphic associations
+with database referential integrity**.
+
+### Key Points
+
+- **Polymorphic One-to-One**: Each record references exactly one target entity, regardless of its type.
+- **Referential Integrity**: Uses foreign keys where possible to maintain integrity between the source and target
+  tables.
+- **Discriminator Column**: Identifies the type of the referenced entity.
+- **Safer Associations**: Ensures that linked records actually exist, reducing risk of orphaned relationships.
+
+#### Advantages
+
+- Combines the flexibility of the Any Discriminator approach with the safety of database-enforced referential integrity.
+- Suitable for scenarios requiring strict one-to-one relationships across multiple entity types.
+
+---
+
+## ERD Diagram
+
+![img_5.png](img_5.png)
+
+entity_relationship table:
+![img_6.png](img_6.png)
+relationship table:
+![img_7.png](img_7.png)
 
 ---
 
