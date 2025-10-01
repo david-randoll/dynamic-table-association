@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>inheritance-single-table</artifactId>
+    <artifactId>inheritance-join-table</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
