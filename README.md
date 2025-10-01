@@ -61,4 +61,39 @@ It's literally just changing the `@Inheritance(strategy = InheritanceType.SINGLE
 
 ---
 
+## Table Per Class Inheritance Approach
+
+Each concrete class in the inheritance hierarchy is mapped to its own table. Tables are not related by foreign keys, and
+each contains all fields inherited from the base class.
+
+### Key Points
+
+- **Separate Tables**: Each concrete subclass has its own table, including inherited fields.
+- **No Referential Integrity**: There is no foreign key relationship between tables. Each table stands alone.
+- **No Shared Primary Key**: Each table manages its own primary keys.
+- **Polymorphic Queries**: Queries across the hierarchy are performed with `UNION` statements.
+
+#### Importance of Referential Integrity
+
+With this approach, **referential integrity is not enforced** at the database level, which can lead to data
+inconsistency if not managed carefully. You must ensure integrity through application logic.
+
+#### How to Use
+
+Change the `@Inheritance` annotation to  
+`@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)` in your entity classes.
+
+#### Advantages
+
+- Fully independent tables for each subclass.
+- Useful for hierarchies where subclasses do not share data and are queried independently.
+
+---
+
+## ERD Diagram
+
+![img_3.png](img_3.png)
+
+---
+
 For more details on implementation, see the code and comments in this repository.
