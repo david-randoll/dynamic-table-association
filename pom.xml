@@ -18,6 +18,7 @@
 		<module>inheritance-single-table</module>
 		<module>inheritance-join-table</module>
 		<module>inheritance-table-per-class-approach</module>
+		<module>any-discriminator-approach</module>
 	</modules>
 	<properties>
 		<java.version>21</java.version>
