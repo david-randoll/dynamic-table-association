@@ -186,4 +186,11 @@ relationship table:
 
 ---
 
-For more details on implementation, see the code and comments in this repository.
+# Recommendation
+
+**Primary:** Use **One-to-One with Any Discriminator**.  
+It gives you both flexibility (add new entity types without schema changes) and safety (DB-level referential integrity
+via the `Relationship` table). Think of it like join-table inheritance but cleaner.
+
+**Secondary:** Use **Any Discriminator Only** if you want a lighter schema and faster iteration.  
+It’s simpler, but you lose DB-enforced integrity and must rely on Hibernate to manage references.
