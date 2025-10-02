@@ -45,13 +45,15 @@ All entities in a hierarchy are stored in a **single table**, distinguished by a
 
 ### ERD Diagram
 
-![img.png](img.png)
+![img.png](images/img.png)
 
 entity_relationship table:
-![img_12.png](img_12.png)
+
+![img_12.png](images/img_12.png)
 
 relationship table:
-![img_1.png](img_1.png)
+
+![img_1.png](images/img_1.png)
 
 ---
 
@@ -77,13 +79,15 @@ Each subclass gets its own table. The base class table holds shared attributes, 
 
 ### ERD Diagram
 
-![img_2.png](img_2.png)
+![img_2.png](images/img_2.png)
 
 entity_relationship table:
-![img_10.png](img_10.png)
+
+![img_10.png](images/img_10.png)
 
 relationship table:
-![img_11.png](img_11.png)
+
+![img_11.png](images/img_11.png)
 
 ---
 
@@ -109,10 +113,11 @@ Each concrete class has its own full table, including inherited fields. No share
 
 ### ERD Diagram
 
-![img_3.png](img_3.png)
+![img_3.png](images/img_3.png)
 
 entity_relationship table:
-![img_9.png](img_9.png)
+
+![img_9.png](images/img_9.png)
 
 There is no relationship table in this approach.
 
@@ -142,10 +147,11 @@ A **generic relationship table** stores a `type` and `id` pair to reference arbi
 
 ### ERD Diagram
 
-![img_4.png](img_4.png)
+![img_4.png](images/img_4.png)
 
 entity_relationship table:
-![img_8.png](img_8.png)
+
+![img_8.png](images/img_8.png)
 
 There is no relationship table in this approach.
 
@@ -177,12 +183,14 @@ A refinement of the Any Discriminator pattern, but applied in a **one-to-one** r
 
 ### ERD Diagram
 
-![img_5.png](img_5.png)
+![img_5.png](images/img_5.png)
 
 entity_relationship table:
-![img_6.png](img_6.png)
+
+![img_6.png](images/img_6.png)
 relationship table:
-![img_7.png](img_7.png)
+
+![img_7.png](images/img_7.png)
 
 ---
 
