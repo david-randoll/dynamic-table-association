@@ -9,6 +9,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 1000        # batch 1000 inserts/updates
+        batch_versioned_data: true  # enable batching for versioned entities
+        order_inserts: true        # group inserts by entity type for batching
+        order_updates: true        # group updates by entity type for batching
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:dynamic_table_association}
     username: ${DB_USER:postgres}
