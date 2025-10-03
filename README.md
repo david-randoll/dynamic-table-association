@@ -194,11 +194,29 @@ relationship table:
 
 ---
 
-# Recommendation
+# Benchmark Results
 
-**Primary:** Use **One-to-One with Any Discriminator**.  
-It gives you both flexibility (add new entity types without schema changes) and safety (DB-level referential integrity
-via the `Relationship` table). Think of it like join-table inheritance but cleaner.
+The following results were obtained using **JMH benchmarks** on each inheritance/association strategy.
 
-**Secondary:** Use **Any Discriminator Only** if you want a lighter schema and faster iteration.  
-It’s simpler, but you lose DB-enforced integrity and must rely on Hibernate to manage references.
+| Approach                           | Operation      | Avg Time (µs/op) | Error (µs/op) |
+|------------------------------------|----------------|------------------|---------------|
+| **Single Table**                   | fetchRandomOrg | 230.283          | ±65.968       |
+|                                    | insertNewOrg   | 536.638          | ±358.074      |
+| **Join Table**                     | fetchRandomOrg | 265.614          | ±262.397      |
+|                                    | insertNewOrg   | 790.703          | ±886.336      |
+| **Table Per Class**                | fetchRandomOrg | 252.662          | ±28.145       |
+|                                    | insertNewOrg   | 457.687          | ±202.391      |
+| **Any Discriminator**              | fetchRandomOrg | 236.679          | ±78.722       |
+|                                    | insertNewOrg   | 555.785          | ±129.829      |
+| **One-to-One + Any Discriminator** | fetchRandomOrg | 238.737          | ±23.863       |
+|                                    | insertNewOrg   | 990.658          | ±227.675      |
+
+### Observations
+
+- **Fetch performance** is comparable across all approaches (~230–265 µs/op).
+- **Insert performance** varies more significantly:
+    - Fastest inserts: **Table Per Class** (~457 µs/op).
+    - Slowest inserts: **One-to-One + Any Discriminator** (~990 µs/op), likely due to extra join and referential checks.
+- **Single Table** provides a strong balance: good fetch speed and moderate insert cost.
+- **Join Table** has the highest variance in inserts due to multiple joins.
+- **Any Discriminator** is competitive in both fetch and insert, at the cost of referential integrity.
