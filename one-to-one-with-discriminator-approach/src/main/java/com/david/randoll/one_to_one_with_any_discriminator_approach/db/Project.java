@@ -9,11 +9,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Entity
-@Table(
-        indexes = {
-                @Index(columnList = "relationship_id")
-        }
-)
 @Getter
 @Setter
 @NoArgsConstructor
