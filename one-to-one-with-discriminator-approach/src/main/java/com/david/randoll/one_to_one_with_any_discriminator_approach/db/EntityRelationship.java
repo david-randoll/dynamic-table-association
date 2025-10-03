@@ -10,10 +10,10 @@ import java.util.Objects;
 
 @Entity
 @Table(
-        uniqueConstraints = @UniqueConstraint(
-                name = "association_unique",
-                columnNames = {EntityRelationship.RELATIONSHIP_PARENT_ID, EntityRelationship.RELATIONSHIP_CHILD_ID}
-        ),
+        name = "entity_relationship",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {EntityRelationship.RELATIONSHIP_PARENT_ID, EntityRelationship.RELATIONSHIP_CHILD_ID})
+        },
         indexes = {
                 @Index(name = "idx_entity_relationship_parent", columnList = EntityRelationship.RELATIONSHIP_PARENT_ID),
                 @Index(name = "idx_entity_relationship_child", columnList = EntityRelationship.RELATIONSHIP_CHILD_ID)

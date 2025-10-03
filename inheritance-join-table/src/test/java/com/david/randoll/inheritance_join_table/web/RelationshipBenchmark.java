@@ -1,10 +1,10 @@
-package com.david.randoll.inheritance_single_table.web;
+package com.david.randoll.inheritance_join_table.web;
 
-import com.david.randoll.inheritance_single_table.db.Organization;
-import com.david.randoll.inheritance_single_table.db.Project;
-import com.david.randoll.inheritance_single_table.db.Task;
-import com.david.randoll.inheritance_single_table.db.User;
-import com.david.randoll.inheritance_single_table.repository.RelationshipRepository;
+import com.david.randoll.inheritance_join_table.db.Organization;
+import com.david.randoll.inheritance_join_table.db.Project;
+import com.david.randoll.inheritance_join_table.db.Task;
+import com.david.randoll.inheritance_join_table.db.User;
+import com.david.randoll.inheritance_join_table.repository.RelationshipRepository;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;

@@ -1,10 +1,11 @@
-package com.david.randoll.inheritance_single_table.web;
+package com.david.randoll.one_to_one_with_any_discriminator_approach.web;
 
-import com.david.randoll.inheritance_single_table.db.Organization;
-import com.david.randoll.inheritance_single_table.db.Project;
-import com.david.randoll.inheritance_single_table.db.Task;
-import com.david.randoll.inheritance_single_table.db.User;
-import com.david.randoll.inheritance_single_table.repository.RelationshipRepository;
+import com.david.randoll.one_to_one_with_any_discriminator_approach.db.Organization;
+import com.david.randoll.one_to_one_with_any_discriminator_approach.db.Project;
+import com.david.randoll.one_to_one_with_any_discriminator_approach.db.Task;
+import com.david.randoll.one_to_one_with_any_discriminator_approach.db.User;
+import com.david.randoll.one_to_one_with_any_discriminator_approach.repository.OrganizationRepository;
+import com.david.randoll.one_to_one_with_any_discriminator_approach.repository.RelatableRepository;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;
@@ -26,11 +27,13 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class RelationshipBenchmark {
-    private static RelationshipRepository relationshipRepository;
+    private static RelatableRepository relatableRepository;
+    private static OrganizationRepository organizationRepository;
 
     @Autowired
-    void setRelationshipRepository(RelationshipRepository relationshipRepository) {
-        RelationshipBenchmark.relationshipRepository = relationshipRepository;
+    void setRelationshipRepository(RelatableRepository relatableRepository, OrganizationRepository organizationRepository) {
+        RelationshipBenchmark.relatableRepository = relatableRepository;
+        RelationshipBenchmark.organizationRepository = organizationRepository;
     }
 
     private Random random = new Random();
@@ -66,10 +69,10 @@ public class RelationshipBenchmark {
         for (Task task : tasks) projects.get(random.nextInt(projects.size())).addChildRelationship(task);
 
         // Save all — cascade persists relationships
-        relationshipRepository.saveAll(tasks);
-        relationshipRepository.saveAll(projects);
-        relationshipRepository.saveAll(users);
-        relationshipRepository.saveAll(orgs);
+        relatableRepository.saveAll(tasks);
+        relatableRepository.saveAll(projects);
+        relatableRepository.saveAll(users);
+        relatableRepository.saveAll(orgs);
 
         insertIndex = TOTAL; // all initial records inserted
     }
@@ -81,9 +84,7 @@ public class RelationshipBenchmark {
     @Transactional
     public Organization fetchRandomOrg() {
         long randomId = 1 + random.nextInt(insertIndex);
-        return relationshipRepository.findById(randomId)
-                .filter(o -> o instanceof Organization)
-                .map(o -> (Organization) o)
+        return organizationRepository.findById(randomId)
                 .orElse(null);
     }
 
@@ -94,7 +95,7 @@ public class RelationshipBenchmark {
     @Transactional
     public void insertNewOrg() {
         Organization org = new Organization().setName(faker.company().name());
-        relationshipRepository.save(org);
+        relatableRepository.save(org);
         insertIndex++;
     }
 

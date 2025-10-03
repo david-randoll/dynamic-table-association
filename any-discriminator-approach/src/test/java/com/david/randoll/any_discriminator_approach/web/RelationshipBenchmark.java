@@ -1,10 +1,11 @@
-package com.david.randoll.inheritance_single_table.web;
+package com.david.randoll.any_discriminator_approach.web;
 
-import com.david.randoll.inheritance_single_table.db.Organization;
-import com.david.randoll.inheritance_single_table.db.Project;
-import com.david.randoll.inheritance_single_table.db.Task;
-import com.david.randoll.inheritance_single_table.db.User;
-import com.david.randoll.inheritance_single_table.repository.RelationshipRepository;
+import com.david.randoll.any_discriminator_approach.db.Organization;
+import com.david.randoll.any_discriminator_approach.db.Project;
+import com.david.randoll.any_discriminator_approach.db.Task;
+import com.david.randoll.any_discriminator_approach.db.User;
+import com.david.randoll.any_discriminator_approach.repository.OrganizationRepository;
+import com.david.randoll.any_discriminator_approach.repository.RelationshipRepository;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;
@@ -27,10 +28,12 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class RelationshipBenchmark {
     private static RelationshipRepository relationshipRepository;
+    private static OrganizationRepository organizationRepository;
 
     @Autowired
-    void setRelationshipRepository(RelationshipRepository relationshipRepository) {
+    void setRelationshipRepository(RelationshipRepository relationshipRepository, OrganizationRepository organizationRepository) {
         RelationshipBenchmark.relationshipRepository = relationshipRepository;
+        RelationshipBenchmark.organizationRepository = organizationRepository;
     }
 
     private Random random = new Random();
@@ -81,9 +84,7 @@ public class RelationshipBenchmark {
     @Transactional
     public Organization fetchRandomOrg() {
         long randomId = 1 + random.nextInt(insertIndex);
-        return relationshipRepository.findById(randomId)
-                .filter(o -> o instanceof Organization)
-                .map(o -> (Organization) o)
+        return organizationRepository.findById(randomId)
                 .orElse(null);
     }
 

@@ -9,6 +9,15 @@ import lombok.experimental.Accessors;
 import java.util.Objects;
 
 @Entity
+@Table(
+        name = "entity_relationship",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"relationship_parent_id", "relationship_child_id"})
+        },
+        indexes = {
+                @Index(name = "idx_parent_child", columnList = "relationship_parent_id, relationship_child_id"),
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor

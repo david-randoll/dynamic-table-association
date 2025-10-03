@@ -13,7 +13,19 @@ import org.springframework.lang.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.david.randoll.one_to_one_with_any_discriminator_approach.db.Relationship.ENTITY_ID;
+import static com.david.randoll.one_to_one_with_any_discriminator_approach.db.Relationship.ENTITY_TYPE;
+
 @Entity
+@Table(
+        name = "relationship",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {ENTITY_TYPE, ENTITY_ID}, name = "uk_relationship_owner")
+        },
+        indexes = {
+                @Index(name = "idx_relationship_parent_child", columnList = ENTITY_TYPE + "," + ENTITY_ID)
+        }
+)
 @Getter
 @Setter
 @Accessors(chain = true)
