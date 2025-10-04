@@ -11,13 +11,13 @@ databases using JPA/Hibernate:
 
 ## Comparison Table
 
-| Approach                           | Flexibility | Referential Integrity | Query Performance (fetchRandomOrg) | Insert Performance (insertNewOrg) | Schema Simplicity | Best Use Case                                        |
-|------------------------------------|-------------|-----------------------|------------------------------------|-----------------------------------|-------------------|------------------------------------------------------|
-| **Single Table Inheritance**       | Low         | Yes                   | **Fastest – 230 µs**               | **Moderate – 537 µs**             | Simple            | Small hierarchies with many shared fields            |
-| **Join Table Inheritance**         | Medium      | Yes                   | **Slow – 266 µs (joins)**          | **Slowest – 791 µs**              | Moderate          | Complex hierarchies with distinct fields             |
-| **Table Per Class**                | Low         | No                    | **Fast – 253 µs (UNION)**          | **Fastest – 458 µs**              | Fragmented        | Independent subclasses, rarely queried together      |
-| **Any Discriminator**              | High        | No (app-level only)   | **Fast – 237 µs**                  | **Moderate – 556 µs**             | Simple generic    | Generic relationships, activity feeds                |
-| **One-to-One + Any Discriminator** | Medium      | Partial (orphaned)    | **Fast – 239 µs**                  | **Slow – 991 µs**                 | Simple            | Polymorphic one-to-one links with enforced integrity |
+| Approach                           | Flexibility | Referential Integrity         | Query Performance (fetchRandomOrg) | Insert Performance (insertNewOrg) | Schema Simplicity | Best Use Case                                       |
+|------------------------------------|-------------|-------------------------------|------------------------------------|-----------------------------------|-------------------|-----------------------------------------------------|
+| **Single Table Inheritance**       | Low         | Yes                           | **Fastest – 230 µs**               | **Moderate – 537 µs**             | Simple            | Small hierarchies with many shared fields           |
+| **Join Table Inheritance**         | Medium      | Yes                           | **Slow – 266 µs (joins)**          | **Slowest – 791 µs**              | Moderate          | Complex hierarchies with distinct fields            |
+| **Table Per Class**                | Low         | No                            | **Fast – 253 µs (UNION)**          | **Fastest – 458 µs**              | Fragmented        | Independent subclasses, rarely queried together     |
+| **Any Discriminator**              | High        | No (app-level only)           | **Fast – 237 µs**                  | **Moderate – 556 µs**             | Simple generic    | Generic relationships, activity feeds               |
+| **One-to-One + Any Discriminator** | Medium      | **Partial (possible orphan)** | **Fast – 239 µs**                  | **Slow – 991 µs**                 | Simple            | Polymorphic one-to-one links with partial integrity |
 
 ---
 
@@ -167,17 +167,19 @@ A refinement of the Any Discriminator pattern, but applied in a **one-to-one** r
   one row in the `Relationship` table.
 - **Discriminator Column**: The `Relationship` table holds a discriminator (`entity_type`) and target key (`entity_id`)
   to resolve back to the owner.
-- **Referential Integrity**: Unlike the pure Any Discriminator approach, this design **does enforce DB-level integrity**
-  via `relationship_id` foreign keys from entity tables into the `Relationship` table.
+- **Referential Integrity**: Unlike the pure Any Discriminator approach, this design **partially enforces integrity**
+  via foreign keys (`relationship_id`) from entity tables into the `Relationship` table.
 
 ### Pros
 
-- Retains flexibility of `@Any` while gaining stronger integrity guarantees.
-- DB-level referential integrity is enforced (`relationship_id` is a proper FK).
+- Retains flexibility of `@Any` while gaining partial integrity guarantees.
+- DB-level foreign key ensures each entity points to a valid `Relationship` entry.
 - Clear one-to-one semantics: each entity has exactly one `Relationship`.
 
 ### Cons
 
+- **Partial referential integrity:** The `Relationship` table can still contain *dangling* entries if the owning entity
+  is deleted without cascading cleanup.
 - More rigid than the pure Any approach (not many-to-any).
 - Slightly more tables and joins involved compared to simpler inheritance.
 
@@ -220,3 +222,5 @@ The following results were obtained using **JMH benchmarks** on each inheritance
 - **Single Table** provides a strong balance: good fetch speed and moderate insert cost.
 - **Join Table** has the highest variance in inserts due to multiple joins.
 - **Any Discriminator** is competitive in both fetch and insert, at the cost of referential integrity.
+- **One-to-One + Any Discriminator** provides *partial referential integrity* but may leave orphaned relationships if
+  not properly cascaded.
