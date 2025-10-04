@@ -11,13 +11,13 @@ databases using JPA/Hibernate:
 
 ## Comparison Table
 
-| Approach                           | Flexibility | Referential Integrity         | Query Performance (fetchRandomOrg) | Insert Performance (insertNewOrg) | Schema Simplicity | Best Use Case                                       |
-|------------------------------------|-------------|-------------------------------|------------------------------------|-----------------------------------|-------------------|-----------------------------------------------------|
-| **Single Table Inheritance**       | Low         | Yes                           | **Fastest – 230 µs**               | **Moderate – 537 µs**             | Simple            | Small hierarchies with many shared fields           |
-| **Join Table Inheritance**         | Medium      | Yes                           | **Slow – 266 µs (joins)**          | **Slowest – 791 µs**              | Moderate          | Complex hierarchies with distinct fields            |
-| **Table Per Class**                | Low         | No                            | **Fast – 253 µs (UNION)**          | **Fastest – 458 µs**              | Fragmented        | Independent subclasses, rarely queried together     |
-| **Any Discriminator**              | High        | No (app-level only)           | **Fast – 237 µs**                  | **Moderate – 556 µs**             | Simple generic    | Generic relationships, activity feeds               |
-| **One-to-One + Any Discriminator** | Medium      | **Partial (possible orphan)** | **Fast – 239 µs**                  | **Slow – 991 µs**                 | Simple            | Polymorphic one-to-one links with partial integrity |
+| Approach                           | Flexibility | Referential Integrity         | Query Performance         | Insert Performance    | Schema Simplicity | Best Use Case                                       |
+|------------------------------------|-------------|-------------------------------|---------------------------|-----------------------|-------------------|-----------------------------------------------------|
+| **Single Table Inheritance**       | Low         | Yes                           | **Fastest – 230 µs**      | **Moderate – 537 µs** | Simple            | Small hierarchies with many shared fields           |
+| **Join Table Inheritance**         | Medium      | Yes                           | **Slow – 266 µs (joins)** | **Slowest – 791 µs**  | Moderate          | Complex hierarchies with distinct fields            |
+| **Table Per Class**                | Low         | No                            | **Fast – 253 µs (UNION)** | **Fastest – 458 µs**  | Fragmented        | Independent subclasses, rarely queried together     |
+| **Any Discriminator**              | High        | No (app-level only)           | **Fast – 237 µs**         | **Moderate – 556 µs** | Simple generic    | Generic relationships, activity feeds               |
+| **One-to-One + Any Discriminator** | Medium      | **Partial (possible orphan)** | **Fast – 239 µs**         | **Slow – 991 µs**     | Simple            | Polymorphic one-to-one links with partial integrity |
 
 ---
 
